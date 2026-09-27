@@ -252,7 +252,7 @@ def run_analysis(data: pd.DataFrame, k: int) -> dict[str, Any]:
     processed["Cluster"] = labels
     stats, classification_by_cluster = calculate_cluster_statistics(processed, k)
 
-            "plots": {
+                    "plots": {
             "elbow": elbow_plot,
             "aqi_chart": aqi_plot,
             "pm25_chart": pm25_plot,
