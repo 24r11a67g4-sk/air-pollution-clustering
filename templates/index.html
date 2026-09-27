@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Air Pollution Data Analysis Using Clustering — DWDM PBL Project" />
+    <title>Air Pollution Data Analysis Using Clustering</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#overview" aria-label="Air quality dashboard home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" role="img"><path d="M16 4c5.8 3.5 9.2 8 9.2 13.4A9.2 9.2 0 1 1 6.8 17.4C6.8 12 10.2 7.5 16 4Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 11c2.8 2 4.3 4.2 4.3 6.8a4.3 4.3 0 1 1-8.6 0c0-2.6 1.5-4.8 4.3-6.8Z" fill="currentColor"/></svg>
+          </span>
+          <span><strong>Atmos</strong><small>DWDM PBL</small></span>
+        </a>
+        <nav class="main-nav" aria-label="Main navigation">
+          <a class="nav-link active" href="#overview">Overview</a>
+          <a class="nav-link" href="#dataset">Dataset</a>
+          <a class="nav-link" href="#analysis">Analysis</a>
+          <a class="nav-link" href="#visualizations">Visualizations</a>
+        </nav>
+        <div class="topbar-meta"><span class="status-dot"></span><span>Analysis workspace</span></div>
+      </header>
+
+      <main>
+        <section class="hero section-pad" id="overview">
+          <div class="hero-copy">
+            <p class="eyebrow"><span class="eyebrow-line"></span> DATA WAREHOUSING &amp; DATA MINING</p>
+            <h1>Air pollution<br /><em>in focus.</em></h1>
+            <p class="hero-lede">Use K-Means clustering to turn city-level pollutant readings into clear, actionable patterns.</p>
+            <div class="hero-actions">
+              <a class="button primary-button" href="#analysis">Explore analysis <span aria-hidden="true">↗</span></a>
+              <span class="dataset-badge"><span class="pulse-ring"></span><span id="filename-label">air_pollution.csv</span></span>
+            </div>
+          </div>
+          <div class="hero-visual" aria-label="Abstract air quality visualization">
+            <div class="orb orb-one"></div><div class="orb orb-two"></div><div class="orb orb-three"></div>
+            <div class="hero-grid"></div>
+            <div class="hero-visual-label"><span>01</span><strong>Pattern<br />discovery</strong></div>
+            <svg class="contour-lines" viewBox="0 0 500 360" aria-hidden="true">
+              <path d="M12 258c94-72 101-179 212-196 97-15 117 58 265-28"/><path d="M12 287c116-67 125-175 223-180 99-5 120 57 254-18"/><path d="M24 317c104-42 153-163 238-164 88-1 137 46 227-3"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="stats-grid section-pad" aria-label="Dataset summary">
+          <article class="stat-card featured-stat">
+            <div class="stat-icon blue-icon"><span>Σ</span></div>
+            <div><p>Total records</p><strong id="total-records">—</strong><small>city observations</small></div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-icon green-icon"><span>↗</span></div>
+            <div><p>Average AQI</p><strong id="average-aqi">—</strong><small>across all cities</small></div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-icon amber-icon"><span>↑</span></div>
+            <div><p>Highest AQI</p><strong id="highest-aqi">—</strong><small id="highest-city">awaiting analysis</small></div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-icon mint-icon"><span>↓</span></div>
+            <div><p>Lowest AQI</p><strong id="lowest-aqi">—</strong><small id="lowest-city">awaiting analysis</small></div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-icon violet-icon"><span>◌</span></div>
+            <div><p>Clusters</p><strong id="cluster-count">3</strong><small>K-Means groups</small></div>
+          </article>
+        </section>
+
+        <section class="section-pad content-section" id="dataset">
+          <div class="section-heading">
+            <div><p class="eyebrow">01 / INPUT DATA</p><h2>Dataset overview</h2></div>
+            <div class="heading-note"><span class="small-check">✓</span><span id="data-status">Dataset ready for analysis</span></div>
+          </div>
+          <div class="dataset-layout">
+            <div class="panel table-panel">
+              <div class="panel-header"><div><h3>Air quality readings</h3><p>Preview of the active dataset</p></div><span class="row-count" id="row-count">— rows</span></div>
+              <div class="table-scroll">
+                <table><thead><tr><th>City</th><th>PM2.5</th><th>PM10</th><th>NO₂</th><th>SO₂</th><th>CO</th><th>AQI</th><th>Cluster</th></tr></thead><tbody id="dataset-body"><tr><td colspan="8" class="loading-cell">Loading dataset…</td></tr></tbody></table>
+              </div>
+            </div>
+            <aside class="panel upload-panel">
+              <div class="upload-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v4.2A1.8 1.8 0 0 0 6.8 20h10.4a1.8 1.8 0 0 0 1.8-1.8V14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <h3>Use your own data</h3>
+              <p>Upload a CSV with the required pollutant columns to run a fresh analysis.</p>
+              <form id="upload-form">
+                <label class="file-drop" for="csv-file"><input id="csv-file" type="file" accept=".csv,text/csv" /><span class="file-drop-title" id="file-name">Choose CSV file</span><span class="file-drop-subtitle">or drop it here</span></label>
+                <button class="button outline-button full-width" type="submit">Upload &amp; analyze <span aria-hidden="true">↗</span></button>
+              </form>
+              <p class="required-note">Required: City, PM2.5, PM10, NO2, SO2, CO, AQI</p>
+            </aside>
+          </div>
+        </section>
+
+        <section class="analysis-band" id="analysis">
+          <div class="section-pad analysis-inner">
+            <div class="section-heading light-heading">
+              <div><p class="eyebrow">02 / MODEL SETUP</p><h2>Configure the analysis</h2></div>
+              <p class="section-description">Standardize six pollution features, then group similar city profiles with K-Means.</p>
+            </div>
+            <div class="analysis-controls">
+              <div class="control-copy"><span class="step-number">01</span><div><h3>Number of clusters</h3><p>Choose how many pollution profiles to discover.</p></div></div>
+              <div class="cluster-picker" role="radiogroup" aria-label="Number of clusters">
+                <label><input type="radio" name="clusters" value="2" /><span>2</span></label>
+                <label class="selected"><input type="radio" name="clusters" value="3" checked /><span>3</span></label>
+                <label><input type="radio" name="clusters" value="4" /><span>4</span></label>
+              </div>
+              <button class="button light-button" id="run-analysis" type="button">Run K-Means clustering <span aria-hidden="true">→</span></button>
+            </div>
+            <div class="method-strip">
+              <div><span class="method-label">Features</span><strong>PM2.5 · PM10 · NO₂ · SO₂ · CO · AQI</strong></div>
+              <div><span class="method-label">Method</span><strong>StandardScaler</strong></div>
+              <div><span class="method-label">Algorithm</span><strong>K-Means · n_init 10</strong></div>
+              <div><span class="method-label">Seed</span><strong>random_state 42</strong></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-pad content-section" id="results">
+          <div class="section-heading">
+            <div><p class="eyebrow">03 / CLUSTER RESULTS</p><h2>Pollution profiles</h2></div>
+            <span class="model-status" id="model-status">Model not yet run</span>
+          </div>
+          <div class="results-layout">
+            <div class="panel result-table-panel">
+              <div class="panel-header"><div><h3>Cluster interpretation</h3><p>Sorted classification based on actual average AQI</p></div><span class="info-dot" title="Cluster numbers are assigned by K-Means; classification is based on average AQI.">i</span></div>
+              <div class="table-scroll"><table class="results-table"><thead><tr><th>Cluster</th><th>Records</th><th>Avg. AQI</th><th>Avg. PM2.5</th><th>Classification</th></tr></thead><tbody id="results-body"><tr><td colspan="5" class="loading-cell">Waiting for model…</td></tr></tbody></table></div>
+            </div>
+            <div class="insight-card">
+              <p class="eyebrow">FIELD NOTES</p>
+              <h3>What the data tells us</h3>
+              <div class="insight-row"><span class="insight-marker danger"></span><div><small>Most polluted</small><strong id="most-polluted">—</strong><p id="most-polluted-detail">The city with the highest recorded AQI.</p></div></div>
+              <div class="insight-row"><span class="insight-marker safe"></span><div><small>Least polluted</small><strong id="least-polluted">—</strong><p id="least-polluted-detail">The city with the lowest recorded AQI.</p></div></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-pad content-section visual-section" id="visualizations">
+          <div class="section-heading"><div><p class="eyebrow">04 / VISUAL EXPLORATION</p><h2>See the patterns</h2></div><p class="section-description">Every chart is generated by Python from the active dataset.</p></div>
+          <div class="plot-grid">
+            <figure class="plot-card plot-wide"><figcaption><div><span class="plot-number">01</span><div><h3>Finding the right K</h3><p>Elbow method · inertia across candidate clusters</p></div></div><span class="plot-tag">MODEL</span></figcaption><div class="plot-frame"><img id="elbow-plot" src="" alt="Elbow method chart" /></div></figure>
+            <figure class="plot-card"><figcaption><div><span class="plot-number">02</span><div><h3>AQI by city</h3><p>Relative air quality index</p></div></div><span class="plot-tag">AQI</span></figcaption><div class="plot-frame"><img id="aqi-plot" src="" alt="AQI bar chart" /></div></figure>
+            <figure class="plot-card"><figcaption><div><span class="plot-number">03</span><div><span><h3>PM2.5 by city</h3><p>Fine particulate matter comparison</p></div></div><span class="plot-tag">PM2.5</span></figcaption><div class="plot-frame"><img id="pm25-plot" src="" alt="PM2.5 bar chart" /></div></figure>
+            <figure class="plot-card"><figcaption><div><span class="plot-number">04</span><div><h3>Cluster map</h3><p>PM2.5 vs AQI with centroids</p></div></div><span class="plot-tag">K-MEANS</span></figcaption><div class="plot-frame"><img id="clusters-plot" src="" alt="K-Means cluster scatter plot" /></div></figure>
+            <figure class="plot-card"><figcaption><div><span class="plot-number">05</span><div><h3>Group distribution</h3><p>Records assigned to each cluster</p></div></div><span class="plot-tag">COUNT</span></figcaption><div class="plot-frame pie-frame"><img id="distribution-plot" src="" alt="Cluster distribution chart" /></div></figure>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer section-pad"><div class="footer-brand"><span class="brand-mark small-mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4c5.8 3.5 9.2 8 9.2 13.4A9.2 9.2 0 1 1 6.8 17.4C6.8 12 10.2 7.5 16 4Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 11c2.8 2 4.3 4.2 4.3 6.8a4.3 4.3 0 1 1-8.6 0c0-2.6 1.5-4.8 4.3-6.8Z" fill="currentColor"/></svg></span><span>Atmos / DWDM PBL Project</span></div><p>Air pollution data analysis using unsupervised learning.</p><p class="footer-year">Built for academic exploration · 2026</p></footer>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+  </body>
+</html>
