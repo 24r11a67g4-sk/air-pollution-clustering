@@ -128,21 +128,12 @@ def calculate_cluster_statistics(data: pd.DataFrame, k: int) -> tuple[pd.DataFra
     return stats.sort_values("Cluster").reset_index(drop=True), classification_by_cluster
 
 
-def figure_to_data_uri(fig) -> str:
-    """Convert a Matplotlib figure into a browser-ready Base64 image."""
-    buffer = BytesIO()
-    fig.savefig(buffer, format="png", dpi=150, bbox_inches="tight")
-    plt.close(fig)
-    buffer.seek(0)
-
-    encoded = base64.b64encode(buffer.getvalue()).decode("ascii")
-    return f"data:image/png;base64,{encoded}"
-    
-    def create_elbow_plot(scaled_features: np.ndarray) -> None:
+def create_elbow_plot(scaled_features: np.ndarray) -> str:
     """Create the inertia curve for K values from 1 through 10."""
     max_k = min(10, len(scaled_features))
     k_values = list(range(1, max_k + 1))
     inertia_values = []
+
     for cluster_count in k_values:
         model = KMeans(n_clusters=cluster_count, random_state=42, n_init=10)
         model.fit(scaled_features)
@@ -155,9 +146,9 @@ def figure_to_data_uri(fig) -> str:
     ax.set_ylabel("Inertia")
     ax.set_xticks(k_values)
     ax.grid(alpha=0.2)
-    fig.tight_layout()
-    return figure_to_data_uri(fig)
 
+        fig.tight_layout()
+    return figure_to_data_uri(fig)
 
 def create_cluster_plot(
     data: pd.DataFrame,
@@ -261,12 +252,13 @@ def run_analysis(data: pd.DataFrame, k: int) -> dict[str, Any]:
     processed["Cluster"] = labels
     stats, classification_by_cluster = calculate_cluster_statistics(processed, k)
 
-    elbow_plot = create_elbow_plot(scaled_features)
-cluster_plot = create_cluster_plot(processed, model, scaler)
-aqi_plot = create_aqi_plot(processed)
-pm25_plot = create_pm25_plot(processed)
-distribution_plot = create_cluster_distribution(processed)
-
+            "plots": {
+            "elbow": elbow_plot,
+            "aqi_chart": aqi_plot,
+            "pm25_chart": pm25_plot,
+            "clusters": cluster_plot,
+            "cluster_distribution": distribution_plot,
+        },
     records = []
     for row in processed.to_dict(orient="records"):
         records.append(
