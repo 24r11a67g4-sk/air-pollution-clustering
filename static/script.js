@@ -64,16 +64,15 @@ function renderResults(statistics) {
 }
 
 function renderPlots(result) {
-  const version = `?v=${Date.now()}`;
-  Object.entries({
-    "elbow-plot": result.plots.elbow,
-    "aqi-plot": result.plots.aqi_chart,
-    "pm25-plot": result.plots.pm25_chart,
-    "clusters-plot": result.plots.clusters,
-    "distribution-plot": result.plots.cluster_distribution,
-  }).forEach(([id, path]) => {
-    byId(id).src = `${path}${version}`;
-  });
+    Object.entries({
+        "elbow-plot": result.plots.elbow,
+        "aqi-plot": result.plots.aqi_chart,
+        "pm25-plot": result.plots.pm25_chart,
+        "clusters-plot": result.plots.clusters,
+        "distribution-plot": result.plots.cluster_distribution,
+    }).forEach(([id, image]) => {
+        byId(id).src = image;
+    });
 }
 
 function renderResult(result) {
